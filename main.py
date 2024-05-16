@@ -1,3 +1,9 @@
 import sqlite3
  
-conn = sqlite3.connect('publications.db')
+con = sqlite3.connect('publications.db')
+cur = con.cursor()
+
+
+
+
+con.close()

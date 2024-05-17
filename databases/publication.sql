@@ -26,3 +26,6 @@ CREATE TABLE authors (
 	FOREIGN KEY (id) REFERENCES publications(publication_id)
 );
 
+--DROP TABLE publications
+--DROP TABLE all_contributors
+--DROP TABLE authors

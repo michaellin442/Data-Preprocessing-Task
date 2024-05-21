@@ -26,7 +26,3 @@ CREATE TABLE authors (
 	author_role VARCHAR(50),
 	publication_id INTEGER REFERENCES publications(publication_id)
 );
-
---DROP TABLE publications
---DROP TABLE all_contributors
---DROP TABLE authors

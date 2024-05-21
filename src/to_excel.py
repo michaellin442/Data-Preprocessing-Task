@@ -1,6 +1,7 @@
 import pandas as pd
 import sqlite3
 
+#export database to excel file "output.xlsx"
 connection = sqlite3.connect("databases/publications.db")
 query = """SELECT 
     authors.publication_id,
@@ -18,3 +19,5 @@ FROM
 ORDER BY publications.publication_id"""
 df = pd.read_sql(query, connection)
 df.to_excel("output_files/output.xlsx")
+
+print("\nData returned as excel sheet.")

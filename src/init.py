@@ -2,9 +2,30 @@ import pandas as pd
 import sqlite3
 import re
 
-#add data to database functions
 db = sqlite3.connect("databases/publications.db")
 
+#run publications.sql to create the databases
+try:
+    with open("databases/publication.sql", 'r') as sql_file:
+        sql_script = sql_file.read()
+        cursor = db.cursor()
+        cursor.executescript(sql_script)
+        db.commit()
+
+except:
+    print("\nDatabase already exists. Deleting and creating new database.")
+    with open("databases/delete_tables.sql", 'r') as sql_file:
+        sql_script = sql_file.read()
+        cursor = db.cursor()
+        cursor.executescript(sql_script)
+        db.commit()
+    with open("databases/publication.sql", 'r') as sql_file:
+        sql_script = sql_file.read()
+        cursor = db.cursor()
+        cursor.executescript(sql_script)
+        db.commit()
+
+#define functions add data to database
 def add_author(conn, contributor):
     sql = '''INSERT INTO all_contributors(full_name,first_name,last_name,short_name,organization,is_associate,is_refered)
              VALUES(?,?,?,?,?,?,?)'''
@@ -29,8 +50,8 @@ def add_publication_author(conn, authors):
     db.commit()
     return cur.lastrowid
 
-#import non-PHRI associates excel data to database
-print("\nNon-PHRI Associates\n----------------------------------")
+#import non-PHRI associates excel data to databases
+print("\nLoading data...")
 authors_dataframe = pd.read_excel("input_files/PHRI Authors List.xlsx", header=None, usecols=[0,1], sheet_name = "non - Associate", na_filter=False)
 for row in authors_dataframe.itertuples(index=None):
     names = list(row)
@@ -53,8 +74,7 @@ for row in authors_dataframe.itertuples(index=None):
     contributor = (full_name,first_name,last_name,short_name,"","True","True")
     add_author(db, contributor)
 
-#import PHRI associates excel data to database
-print("\nPHRI Associates\n----------------------------------")
+#import PHRI associates excel data to databases
 PHRI_authors_dataframe = pd.read_excel("input_files/PHRI Authors List.xlsx",sheet_name = "Associate", usecols=(0,2), header = None, na_filter=False) 
 for row in PHRI_authors_dataframe.itertuples(index=None):
     names = list(row)
@@ -77,8 +97,7 @@ for row in PHRI_authors_dataframe.itertuples(index=None):
     contributor = (full_name,first_name,last_name,short_name,"PHRI","True","True")
     add_author(db, contributor)
 
-#import publications data to database
-print("\nPublications\n----------------------------------")
+#import publications data to databases
 publications_dataframe = pd.read_csv("input_files/publications.csv") 
 for row in publications_dataframe.itertuples(index=None):
     values = list(row)
@@ -106,3 +125,6 @@ for row in publications_dataframe.itertuples(index=None):
             author_role = "Co-Author"
         authors = (short_name,author_role,publication_id)
         add_publication_author(db, authors)
+
+print("\nData loaded. Please run to_excel.py.")
+db.close()

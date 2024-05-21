@@ -2,9 +2,7 @@ import pandas as pd
 import sqlite3
 import re
 
-
 #add data to database functions
-
 db = sqlite3.connect("databases/publications.db")
 
 def add_author(conn, contributor):
@@ -33,39 +31,50 @@ def add_publication_author(conn, authors):
 
 #import non-PHRI associates excel data to database
 print("\nNon-PHRI Associates\n----------------------------------")
-authors_dataframe = pd.read_excel("input_files/PHRI Authors List.xlsx", header=None, usecols=[0,1], sheet_name="non - Associate", na_filter=False)
+authors_dataframe = pd.read_excel("input_files/PHRI Authors List.xlsx", header=None, usecols=[0,1], sheet_name = "non - Associate", na_filter=False)
 for row in authors_dataframe.itertuples(index=None):
     names = list(row)
     short_name = names[1]
     full_name = names[0]
-    long_name = (names[0]).split(',')
-    if len(long_name) > 1:
+    if full_name == "":
+        long_name = (names[1]).split(' ')
         last_name = long_name[0]
         first_name = long_name[1]
-    else:
-        long_name = names[1].split()
-        last_name = long_name[0]
-        first_name = long_name[1]
+    else: 
+        long_name = (names[0]).split(',')
+        if len(long_name) > 1:
+            last_name = long_name[0]
+            first_name = long_name[1].strip()
+        else:
+            long_name = names[1].split()
+            last_name = long_name[0]
+            first_name = long_name[1].strip()
 
-    contributor = (full_name, first_name, last_name, short_name,"","True", "True")
+    contributor = (full_name,first_name,last_name,short_name,"","True","True")
+    add_author(db, contributor)
 
 #import PHRI associates excel data to database
 print("\nPHRI Associates\n----------------------------------")
-PHRI_authors_dataframe = pd.read_excel("input_files/PHRI Authors List.xlsx",sheet_name = "Associate", usecols=(0,2), header = None) 
-for row in authors_dataframe.itertuples(index=None):
+PHRI_authors_dataframe = pd.read_excel("input_files/PHRI Authors List.xlsx",sheet_name = "Associate", usecols=(0,2), header = None, na_filter=False) 
+for row in PHRI_authors_dataframe.itertuples(index=None):
     names = list(row)
     short_name = names[1]
     full_name = names[0]
-    long_name = (names[0]).split(',')
-    if len(long_name) > 1:
+    if full_name == "":
+        long_name = (names[1]).split(' ')
         last_name = long_name[0]
-        first_name = long_name[1].strip()
-    else:
-        long_name = names[1].split()
-        last_name = long_name[0]
-        first_name = long_name[1].strip()
+        first_name = long_name[1]
+    else: 
+        long_name = (names[0]).split(',')
+        if len(long_name) > 1:
+            last_name = long_name[0]
+            first_name = long_name[1].strip()
+        else:
+            long_name = names[1].split()
+            last_name = long_name[0]
+            first_name = long_name[1].strip()
 
-    contributor = (full_name, first_name, last_name, short_name,"PHRI","True", "True")
+    contributor = (full_name,first_name,last_name,short_name,"PHRI","True","True")
     add_author(db, contributor)
 
 #import publications data to database

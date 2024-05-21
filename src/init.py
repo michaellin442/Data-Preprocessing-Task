@@ -4,14 +4,13 @@ import re
 
 db = sqlite3.connect("databases/publications.db")
 
-#run publications.sql to create the databases
+#create the databases
 try:
     with open("databases/publication.sql", 'r') as sql_file:
         sql_script = sql_file.read()
         cursor = db.cursor()
         cursor.executescript(sql_script)
         db.commit()
-
 except:
     print("\nDatabase already exists. Deleting and creating new database.")
     with open("databases/delete_tables.sql", 'r') as sql_file:
@@ -25,7 +24,7 @@ except:
         cursor.executescript(sql_script)
         db.commit()
 
-#define functions add data to database
+#define functions to add data to database
 def add_author(conn, contributor):
     sql = '''INSERT INTO all_contributors(full_name,first_name,last_name,short_name,organization,is_associate,is_refered)
              VALUES(?,?,?,?,?,?,?)'''

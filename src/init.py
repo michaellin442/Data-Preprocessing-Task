@@ -5,12 +5,16 @@ import re
 db = sqlite3.connect("databases/publications.db")
 
 #create the databases
-try:
+
+def create_database():
     with open("databases/publication.sql", 'r') as sql_file:
         sql_script = sql_file.read()
         cursor = db.cursor()
         cursor.executescript(sql_script)
         db.commit()
+
+try:
+    create_database()
 except:
     print("\nDatabase already exists. Deleting and creating new database.")
     with open("databases/delete_tables.sql", 'r') as sql_file:
@@ -18,11 +22,7 @@ except:
         cursor = db.cursor()
         cursor.executescript(sql_script)
         db.commit()
-    with open("databases/publication.sql", 'r') as sql_file:
-        sql_script = sql_file.read()
-        cursor = db.cursor()
-        cursor.executescript(sql_script)
-        db.commit()
+    create_database()
 
 #define functions to add data to database
 def add_author(conn, contributor):
